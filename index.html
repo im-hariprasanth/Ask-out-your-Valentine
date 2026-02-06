@@ -68,21 +68,64 @@
       "./images/image7.gif"
     ];
   
-    noButton.addEventListener('click', function() {
+    let isFirstMove = true;
+    
+    function moveNoButton() {
+      // On first move, set up positioning and transition, then move on next frame
+      if (isFirstMove) {
+        noButton.style.position = 'absolute';
+        noButton.style.transition = 'left 0.5s ease, top 0.5s ease';
+        
+        // Get current position to set as starting point
+        const rect = noButton.getBoundingClientRect();
+        noButton.style.left = `${rect.left}px`;
+        noButton.style.top = `${rect.top}px`;
+        
+        isFirstMove = false;
+        
+        // Move on next frame so transition applies
+        requestAnimationFrame(() => {
+          moveToRandomPosition();
+        });
+        return;
+      }
+      
+      moveToRandomPosition();
+    }
+    
+    function moveToRandomPosition() {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const buttonWidth = noButton.offsetWidth;
+      const buttonHeight = noButton.offsetHeight;
+      
+      // Calculate random position ensuring button stays within viewport
+      const maxX = windowWidth - buttonWidth - 20;
+      const maxY = windowHeight - buttonHeight - 20;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      
+      noButton.style.left = `${randomX}px`;
+      noButton.style.top = `${randomY}px`;
+      
+      // Change text and image as it moves
       if (noClickCount < 5) {
         noClickCount++;
         imageDisplay.src = imagePaths[noClickCount];
-        buttonHeight += 35; // Increase height by 5px on each click
+        buttonHeight += 35;
         buttonWidth += 35;
-        fontSize += 25; // Increase font size by 1px on each click
-        yesButton.style.height = `${buttonHeight}px`; // Update button height
+        fontSize += 25;
+        yesButton.style.height = `${buttonHeight}px`;
         yesButton.style.width = `${buttonWidth}px`;
-        yesButton.style.fontSize = `${fontSize}px`; // Update font size
+        yesButton.style.fontSize = `${fontSize}px`;
         if (noClickCount < 6) {
           noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
         }
       }
-    });
+    }
+    
+    noButton.addEventListener('mouseover', moveNoButton);
+    noButton.addEventListener('click', moveNoButton);
   
     yesButton.addEventListener('click', () => {
       imageDisplay.src = './images/image7.gif'; // Change to image7.gif
